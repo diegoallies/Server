@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const { exec } = require('child_process');
+const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -8,29 +9,24 @@ app.use(express.json());
 
 app.post('/deploy', async (req, res) => {
   try {
-    const {
-      appName,
-      herokuEmail,
-      gitCommitMsg,
-      gitBranch,
-      sessionId,
-      botName,
-      ownerNumber,
-      ownerName,
-    } = req.body;
+    const { appName, gitCommitMsg, gitBranch, sessionId, botName, ownerNumber, ownerName } = req.body;
 
     // Check if all required fields are provided
-    if (!appName || !herokuEmail || !gitCommitMsg || !gitBranch) {
+    if (!appName || !gitCommitMsg || !gitBranch) {
       return res.status(400).json({
-        message: 'Missing required fields. Please provide appName, herokuEmail, gitCommitMsg, and gitBranch.',
+        message: 'Missing required fields. Please provide appName, gitCommitMsg, and gitBranch.',
       });
     }
+
+    // Save app name to a file
+    fs.appendFileSync('deployed_apps.txt', `${appName}\n`, 'utf8');
 
     const deploymentCommand = `
       #!/bin/bash
 
       APP_NAME="${appName}"
-      HEROKU_EMAIL="${herokuEmail}"
+      HEROKU_EMAIL="blacodzacollins@gmail.com"
+      HEROKU_API_KEY="HRKU-da40b814-bde5-48a9-a0b5-d8c32cdb4e2d"
       GIT_COMMIT_MSG="${gitCommitMsg}"
       GIT_BRANCH="${gitBranch}"
       SESSION_ID="${sessionId}"
@@ -48,7 +44,8 @@ app.post('/deploy', async (req, res) => {
       git commit -m "$GIT_COMMIT_MSG"
 
       echo "Logging in to Heroku..."
-      echo "$HEROKU_EMAIL" | heroku login -i
+      echo $HEROKU_API_KEY | heroku auth:token
+      echo $HEROKU_API_KEY | heroku login --interactive
 
       echo "Creating Heroku app: $APP_NAME..."
       heroku create "$APP_NAME"
@@ -64,7 +61,7 @@ app.post('/deploy', async (req, res) => {
       [ -n "$BOT_NAME" ] && heroku config:set BOT_NAME="$BOT_NAME" --app "$APP_NAME"
       [ -n "$OWNER_NUMBER" ] && heroku config:set OWNER_NUMBER="$OWNER_NUMBER" --app "$APP_NAME"
       [ -n "$OWNER_NAME" ] && heroku config:set OWNER_NAME="$OWNER_NAME" --app "$APP_NAME"
-      
+
       echo "Deployment completed successfully!"
     `;
 
