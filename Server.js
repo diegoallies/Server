@@ -87,4 +87,46 @@ app.post('/deploy', async (req, res) => {
       heroku config:set ANTI_BAD="false" --app "${APP_NAME}"
       heroku config:set AUTO_STATUS_SEEN="true" --app "${APP_NAME}"
       heroku config:set AUTO_STATUS_REPLY="false" --app "${APP_NAME}"
-      heroku config:set AUTO_STATUS_MSG="*[❄️] Hi there, 𝔼ℕℂℝ𝕐ℙ𝕋
+      heroku config:set AUTO_STATUS_MSG="*[❄️] Hi there, 𝔼ℕℂℝ𝕐ℙ𝕋-𝟚𝟟 𝔸𝕀 has viewed your Status🎐*" --app "${APP_NAME}"
+      heroku config:set MODE="public" --app "${APP_NAME}"
+      heroku config:set ANTI_LINK="true" --app "${APP_NAME}"
+      heroku config:set AUTO_VOICE="true" --app "${APP_NAME}"
+      heroku config:set AUTO_STICKER="true" --app "${APP_NAME}"
+      heroku config:set AUTO_REPLY="true" --app "${APP_NAME}"
+      heroku config:set ALWAYS_ONLINE="true" --app "${APP_NAME}"
+      heroku config:set PUBLIC_MODE="true" --app "${APP_NAME}"
+      heroku config:set AUTO_TYPING="true" --app "${APP_NAME}"
+      heroku config:set READ_CMD="true" --app "${APP_NAME}"
+      heroku config:set AUTO_RECORDING="true" --app "${APP_NAME}"
+
+      # 10. Open the app in the browser (optional)
+      # echo "Opening app in browser..."
+      # heroku open --app "${APP_NAME}"
+
+      echo "All tasks completed successfully!"
+    `;
+
+    try {
+      const { stdout, stderr } = await exec(deploymentCommand);
+
+      if (stderr) {
+        console.error(stderr);
+        return res.status(500).json({ message: 'Deployment failed.', error: stderr });
+      }
+
+      console.log(stdout);
+      res.json({ message: 'Deployment successful!' });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Deployment failed.', error: error.message });
+    }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Deployment failed.', error: error.message });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
