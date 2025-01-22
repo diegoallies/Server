@@ -1,7 +1,21 @@
 {
+  "name": "Server",
+  "version": "1.0.0",
+  "description": "A server for Heroku deployment",
+  "main": "Server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "child_process": "^1.0.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2"
-  }
+  },
+  "engines": {
+    "node": ">=16.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
